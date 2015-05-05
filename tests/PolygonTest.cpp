@@ -1,6 +1,6 @@
 #include <iostream>
 #include <GL/glut.h>
-#include "../Figures.h"
+#include "../src/Figures.h"
 
 void onDisplay();
 void onClick(int button, int state, int x, int y);

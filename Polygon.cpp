@@ -1,5 +1,15 @@
 #include "Figures.h"
 
+void Polygon :: rotate(float angle)
+{}
+
+void Polygon :: translate(int dx, int dy)
+{}
+
+void Polygon :: scale(int sx, int sy)
+{}
+
+
 void Polygon :: clip()
 {
 }

@@ -5,6 +5,11 @@
 class Figure
 {
  public:
+
+  virtual void rotate(float angle) = 0;
+  virtual void translate(int dx, int dy) = 0;
+  virtual void scale(int sx, int sy) = 0;
+  
   virtual void clip() = 0;
   virtual void draw() const = 0;
   virtual void fill() const = 0;
@@ -37,6 +42,10 @@ class Line : public Figure
 
   std::list<Point> getPointList() const;
 
+  void rotate(float angle);
+  void translate(int dx, int dy);
+  void scale(int sx, int sy);
+  
   void clip();
   void draw() const;
   void fill() const;
@@ -67,6 +76,10 @@ class Circle : public Figure
   void y(int py) { p.y = py; }
   void r(int cr) { radius = cr > 0 ? cr : 0; }
 
+  void rotate(float angle);
+  void translate(int dx, int dy);
+  void scale(int sx, int sy);
+  
   void clip();
   void draw() const;
   void fill() const;
@@ -96,6 +109,10 @@ class Polygon : public Figure
   void clear() { points.clear(); }
   bool closed() const { return points.size() > 2 && points.front() == points.back(); }
 
+  void rotate(float angle);
+  void translate(int dx, int dy);
+  void scale(int sx, int sy);
+  
   void clip();
   void draw() const;
   void fill() const;
@@ -137,6 +154,10 @@ class Rectangle : Figure
   void width(int wr) { w = wr > 0 ? wr : 0; }
   void height(int hr) { h = hr > 0 ? hr : 0; }
 
+  void rotate(float angle);
+  void translate(int dx, int dy);
+  void scale(int sx, int sy);
+  
   void clip();
   void draw() const;
   void fill() const;

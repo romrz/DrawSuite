@@ -1,5 +1,15 @@
 #include "Figures.h"
 
+void Rectangle :: rotate(float angle)
+{}
+
+void Rectangle :: translate(int dx, int dy)
+{}
+
+void Rectangle :: scale(int sx, int sy)
+{}
+
+
 void Rectangle :: clip()
 {
 }

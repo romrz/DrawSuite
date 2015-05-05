@@ -2,6 +2,15 @@
 #include "Figures.h"
 #include <cmath>
 
+void Line :: rotate(float angle)
+{}
+
+void Line :: translate(int dx, int dy)
+{}
+
+void Line :: scale(int sx, int sy)
+{}
+
 std::list<Point> Line :: getPointList() const
 {
   std::list<Point> points;

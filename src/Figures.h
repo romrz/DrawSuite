@@ -37,24 +37,51 @@ class Line : public Figure
   void fill() const;
 };
 
-class Circle : public Figure
+class Oval : public Figure
 {
  private:
   Point mC;
-  int mR;
+  int mRX;
+  int mRY;
   
  public:
-  Circle(const Point& c, int cr) : mC(c), mR(cr > 0 ? cr : 0) {}
-  Circle(int x, int y, int cr) : mC(Point(x, y)), mR(cr > 0 ? cr : 0) {}
-  Circle& operator=(const Circle& c) { mC = c.mC; mR = c.mR; }
+  Oval(const Point& c, int crx, int cry) : mC(c) { rx(crx); ry(cry); }
+  Oval(int x, int y, int crx, int cry) : mC(Point(x, y)) { rx(crx); ry(cry); }
+  Oval& operator=(const Oval& c) { mC = c.mC; mRX = c.mRX; mRY = c.mRY; }
 
   int x() const { return mC.x; }
   int y() const { return mC.y; }
-  int r() const { return mR; }
+  int rx() const { return mRX; }
+  int ry() const { return mRY; }
 
   void x(int px) { mC.x = px; }
   void y(int py) { mC.y = py; }
-  void r(int cr) { mR = cr > 0 ? cr : 0; }
+  void rx(int crx) { mRX = crx > 0 ? crx : 0; }
+  void ry(int cry) { mRY = cry > 0 ? cry : 0; }
+
+  void draw() const;
+  void fill() const;
+};
+
+class Rectangle : public Figure
+{
+ private:
+  Point p1, p2;
+  
+ public:
+  Rectangle(int x, int y, int w, int h) : p1(Point(x, y)), p2(Point(p1.x + w, p1.y + h)) {}
+  Rectangle(Rectangle& r) : p1(r.p1), p2(r.p2) {}
+  Rectangle& operator=(Rectangle& r) { p1 = r.p1; p2 = r.p2; }
+
+  int x() const { return p1.x; }
+  int y() const { return p1.y; }
+  int width() const { return p2.x - p1.x; }
+  int height() const { return p2.y - p1.y; }
+
+  void x(int rx) { p1.x = rx; }
+  void y(int ry) { p1.y = ry; }
+  void width(int w) { p2.x = p1.x + w; }
+  void height(int h) { p2.y = p1.y + h; }
 
   void draw() const;
   void fill() const;
@@ -83,30 +110,6 @@ class Polygon : public Figure
 
   void clear() { mPoints.clear(); }
   bool closed() const { return mPoints.size() > 2 && mPoints.front() == mPoints.back(); }
-
-  void draw() const;
-  void fill() const;
-};
-
-class Rectangle : public Figure
-{
- private:
-  Point p1, p2;
-  
- public:
-  Rectangle(int x, int y, int w, int h) : p1(Point(x, y)), p2(Point(p1.x + w, p1.y + h)) {}
-  Rectangle(Rectangle& r) : p1(r.p1), p2(r.p2) {}
-  Rectangle& operator=(Rectangle& r) { p1 = r.p1; p2 = r.p2; }
-
-  int x() const { return p1.x; }
-  int y() const { return p1.y; }
-  int width() const { return p2.x - p1.x; }
-  int height() const { return p2.y - p1.y; }
-
-  void x(int rx) { p1.x = rx; }
-  void y(int ry) { p1.y = ry; }
-  void width(int w) { p2.x = p1.x + w; }
-  void height(int h) { p2.y = p1.y + h; }
 
   void draw() const;
   void fill() const;

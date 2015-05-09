@@ -1,5 +1,4 @@
 #include <iostream>
-#include <GL/glut.h>
 #include "../src/Figures.h"
 
 void onDisplay();
@@ -39,15 +38,17 @@ int main()
 void onDisplay()
 {
   glClear(GL_COLOR_BUFFER_BIT);
-  glColor3f(1, 0, 0);
 
   polygon.draw();
   
   if(polygon.closed())
     polygon.fill();
 
-  if(showBoundRect)
-    Rectangle(polygon.first().x - 10, polygon.first().y - 10, 20 , 20).draw();
+  if(showBoundRect) {
+    Rectangle rect(polygon.first().x - 10, polygon.first().y - 10, 20 , 20);
+    rect.setColor(0, 0, 255);
+    rect.draw();
+  }
 
   glFlush();
 }

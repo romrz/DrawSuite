@@ -1,52 +1,38 @@
 #include <list>
 #include <vector>
-#include "GraphicsAlgorithms.h"
+#include "Graphics.h"
 
 class Figure
 {
+ protected:
+  float mR = 0.0f;
+  int mTX = 0, mTY = 0;
+  float mSX = 1.0f, mSY = 1.0f;
+
+  Color mColor = {0, 0, 0};
+  
  public:
 
-  virtual void rotate(float angle) = 0;
-  virtual void translate(int dx, int dy) = 0;
-  virtual void scale(int sx, int sy) = 0;
+  virtual void rotate(float angle) { mR = angle; };
+  virtual void translate(int tx, int ty) { mTX = tx; mTY = ty; }
+  virtual void scale(float sx, float sy) { mSX = sx; mSY = sy; }
+
+  virtual void setColor(int r, int g, int b) { mColor = {r, g, b}; }
   
-  virtual void clip() = 0;
   virtual void draw() const = 0;
   virtual void fill() const = 0;
 };
 
-class Point
-{
- public:
-  int x;
-  int y;
-  int z;
-
-  Point(int px = 0, int py = 0, int pz = 0) : x(px), y(py), z(pz) {}
-  Point(const Point& p) : x(p.x), y(p.y), z(p.z) {}
-  Point& operator=(const Point& p) { x = p.x; y = p.y; z = p.z; }
-
-  friend bool operator<(const Point& p1, const Point& p2);
-  friend bool operator==(const Point& p1, const Point& p2);
-};
 
 class Line : public Figure
 {
  public:
-  Point p1;
-  Point p2;
+  Point p1, p2;
 
   Line(const Point& pi, const Point& pf) : p1(pi), p2(pf) {}
   Line(const Line& l) : p1(l.p1), p2(l.p2) {}
   Line& operator=(const Line& l) { p1 = l.p1; p2 = l.p2; }
 
-  std::list<Point> getPointList() const;
-
-  void rotate(float angle);
-  void translate(int dx, int dy);
-  void scale(int sx, int sy);
-  
-  void clip();
   void draw() const;
   void fill() const;
 };
@@ -54,33 +40,22 @@ class Line : public Figure
 class Circle : public Figure
 {
  private:
-  Point p;
-  int radius;
+  Point mC;
+  int mR;
   
  public:
-  Circle(const Point& c, int cr) : p(c)
-  {
-    radius = cr > 0 ? cr : 0;
-  }
-  Circle(int x, int y, int cr) : p(Point(x, y))
-  {
-    radius = cr > 0 ? cr : 0;
-  }
-  Circle& operator=(const Circle& c) { p = c.p; radius = c.radius; }
+  Circle(const Point& c, int cr) : mC(c), mR(cr > 0 ? cr : 0) {}
+  Circle(int x, int y, int cr) : mC(Point(x, y)), mR(cr > 0 ? cr : 0) {}
+  Circle& operator=(const Circle& c) { mC = c.mC; mR = c.mR; }
 
-  int x() const { return p.x; }
-  int y() const { return p.y; }
-  int r() const { return radius; }
+  int x() const { return mC.x; }
+  int y() const { return mC.y; }
+  int r() const { return mR; }
 
-  void x(int px) { p.x = px; }
-  void y(int py) { p.y = py; }
-  void r(int cr) { radius = cr > 0 ? cr : 0; }
+  void x(int px) { mC.x = px; }
+  void y(int py) { mC.y = py; }
+  void r(int cr) { mR = cr > 0 ? cr : 0; }
 
-  void rotate(float angle);
-  void translate(int dx, int dy);
-  void scale(int sx, int sy);
-  
-  void clip();
   void draw() const;
   void fill() const;
 };
@@ -88,77 +63,51 @@ class Circle : public Figure
 class Polygon : public Figure
 {
  private:
-  std::vector<Point> points;
+  std::vector<Point> mPoints;
   
  public:
   Polygon() {}
-  Polygon(std::vector<Point> pts) : points(pts) {}
-  Polygon(Polygon& poly) : points(poly.points) {}
-  Polygon& operator=(Polygon& poly) { points = poly.points; }
+  Polygon(std::vector<Point> pts) : mPoints(pts) {}
+  Polygon(Polygon& poly) : mPoints(poly.mPoints) {}
+  Polygon& operator=(Polygon& poly) { mPoints = poly.mPoints; }
 
-  Point& first() { return points.front(); }
-  Point& last() { return points.back(); }
-  int size() const { return points.size(); }
+  Point& first() { return mPoints.front(); }
+  Point& last() { return mPoints.back(); }
+  int size() const { return mPoints.size(); }
   
-  Point& at(int i) { return points.at(i); }
-  Point& operator[](int i) { return points[i]; }
+  Point& at(int i) { return mPoints.at(i); }
+  Point& operator[](int i) { return mPoints[i]; }
   
-  void addPoint(Point p) { points.push_back(p); }
-  void addPoint(int x, int y) { points.push_back(Point(x, y)); }
+  void addPoint(Point p) { mPoints.push_back(p); }
+  void addPoint(int x, int y) { mPoints.push_back(Point(x, y)); }
 
-  void clear() { points.clear(); }
-  bool closed() const { return points.size() > 2 && points.front() == points.back(); }
+  void clear() { mPoints.clear(); }
+  bool closed() const { return mPoints.size() > 2 && mPoints.front() == mPoints.back(); }
 
-  void rotate(float angle);
-  void translate(int dx, int dy);
-  void scale(int sx, int sy);
-  
-  void clip();
   void draw() const;
   void fill() const;
 };
 
-class Rectangle : Figure
+class Rectangle : public Figure
 {
  private:
-  Point p;
-  int w;
-  int h;
+  Point p1, p2;
   
  public:
-  Rectangle(int x, int y, int wr, int hr) : p(Point(x, y))
-  {
-    w = wr > 0 ? wr : 0;
-    h = hr > 0 ? hr : 0;
-  }
-  Rectangle(Point pt, int wr, int hr) : p(pt)
-  {
-    w = wr > 0 ? wr : 0;
-    h = hr > 0 ? hr : 0;
-  }
-  Rectangle(Rectangle& r) : p(r.p), w(r.w), h(r.h) {}
-  Rectangle& operator=(Rectangle& r)
-  {
-    p = r.p;
-    w = r.w;
-    h = r.h;
-  }
+  Rectangle(int x, int y, int w, int h) : p1(Point(x, y)), p2(Point(p1.x + w, p1.y + h)) {}
+  Rectangle(Rectangle& r) : p1(r.p1), p2(r.p2) {}
+  Rectangle& operator=(Rectangle& r) { p1 = r.p1; p2 = r.p2; }
 
-  int x() const { return p.x; }
-  int y() const { return p.y; }
-  int width() const { return w; }
-  int height() const { return h; }
+  int x() const { return p1.x; }
+  int y() const { return p1.y; }
+  int width() const { return p2.x - p1.x; }
+  int height() const { return p2.y - p1.y; }
 
-  void x(int rx) { p.x = rx; }
-  void y(int ry) { p.y = ry; }
-  void width(int wr) { w = wr > 0 ? wr : 0; }
-  void height(int hr) { h = hr > 0 ? hr : 0; }
+  void x(int rx) { p1.x = rx; }
+  void y(int ry) { p1.y = ry; }
+  void width(int w) { p2.x = p1.x + w; }
+  void height(int h) { p2.y = p1.y + h; }
 
-  void rotate(float angle);
-  void translate(int dx, int dy);
-  void scale(int sx, int sy);
-  
-  void clip();
   void draw() const;
   void fill() const;
 };

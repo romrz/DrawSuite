@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../src/Figures.h"
+#include "../Figures.h"
 
 void onDisplay();
 void onClick(int button, int state, int x, int y);

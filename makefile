@@ -1,10 +1,10 @@
 
 CC=g++
-CFLAGS=-std=c++11 -c
+CFLAGS=-std=gnu++0x -c
 LFLAGS=-lGL -lGLU -lglut
 
 SRC_FILES=Graphics Line Rectangle Polygon
-TEST_FILES=PolygonTest
+TEST_FILES=PolygonTest ClipTest
 
 SRC_DIR=src/
 OBJ_DIR=obj/

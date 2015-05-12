@@ -12,7 +12,32 @@ void Graphics::translate(int tx, int ty)
 void Graphics::scale(float sx, float sy)
 {
 }
-  
+
+bool Graphics::clipLine(const Point &p1, const Point &p2) const
+{
+  Point D = p2 - p1, n, w, p, f, aux;
+  float ti = 0, tf = 0, temp = 0;
+
+  for(int i = 0; i < mClipArea.points.size() - 1; i++) {
+    aux = mClipArea.points[i] - mClipArea.points[i + 1];
+    n = Point(aux.y, -aux.x, aux.z);
+
+    f = mClipArea.points[i];
+    w = p1 * f;
+
+    if(n*D < 0) {
+      temp = (float)(n*w)/(float)(n*D);
+      tf = tf < temp ? tf : temp;
+    }
+    else if(n*D > 0) {
+      temp = (float)(n*w)/(float)(n*D);
+      ti = ti > temp ? ti : temp;
+    }
+  }
+
+  drawLine(p1 + (p2 - p1)*ti, p1 + (p2 - p1)*tf);
+}
+
 void Graphics::drawLine(const Point &p1, const Point &p2) const
 {
   glBegin(GL_POINTS);

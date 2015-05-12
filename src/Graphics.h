@@ -21,6 +21,9 @@ struct Point
     
   bool operator<(const Point& p) const { return y < p.y; }
   bool operator==(const Point& p) const { return x == p.x && y == p.y && z == p.z; }
+  Point operator+(const Point& p) const { return Point(x + p.x, y + p.y, z + p.z); }
+  Point operator-(const Point& p) const { return Point(x - p.x, y - p.y, z - p.z); }
+  int operator*(const Point& p) const { return x * p.x + y * p.y + z * p.z; }
 };
 
 struct ClipArea
@@ -56,6 +59,8 @@ class Graphics
   void rotate(float r);
   void translate(int tx, int ty);
   void scale(float sx, float sy);
+
+  bool clipLine(const Point &p1, const Point &p2) const;
 
   std::list<Point> getLinePoints(const Point &p1, const Point &p2) const;
   void drawLine(const Point &p1, const Point &p2) const;

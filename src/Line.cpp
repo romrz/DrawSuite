@@ -10,7 +10,10 @@ void Line :: draw() const
   g.rotate(mR);
   g.translate(mTX, mTY);
   g.scale(mSX, mSY);
-  g.drawLine(p1, p2);
+  if(mClip)
+    g.clipLine(p1, p2);
+  else
+    g.drawLine(p1, p2);
   g.rotate(-mR);
   g.translate(-mTX, -mTY);
   g.scale(-mSX, -mSY);

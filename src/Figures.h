@@ -5,13 +5,16 @@
 class Figure
 {
  protected:
-  float mR = 0.0f;
-  int mTX = 0, mTY = 0;
-  float mSX = 1.0f, mSY = 1.0f;
+  float mR;
+  int mTX, mTY;
+  float mSX, mSY;
 
-  Color mColor = {0, 0, 0};
+  Color mColor;
+
+  bool mClip;
   
  public:
+  Figure() { mR = mTX = mTY = 0; mSX = mSY = 1.0f; mColor = {0, 0, 0}; mClip = true; }
 
   virtual void rotate(float angle) { mR = angle; };
   virtual void translate(int tx, int ty) { mTX = tx; mTY = ty; }
@@ -19,6 +22,9 @@ class Figure
 
   virtual void setColor(int r, int g, int b) { mColor = {r, g, b}; }
   
+  virtual void clip(bool c) { mClip = c; }
+  virtual bool clip() { return mClip; }
+
   virtual void draw() const = 0;
   virtual void fill() const = 0;
 };

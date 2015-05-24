@@ -23,7 +23,8 @@ struct Point
   bool operator==(const Point& p) const { return x == p.x && y == p.y && z == p.z; }
   Point operator+(const Point& p) const { return Point(x + p.x, y + p.y, z + p.z); }
   Point operator-(const Point& p) const { return Point(x - p.x, y - p.y, z - p.z); }
-  int operator*(const Point& p) const { return x * p.x + y * p.y + z * p.z; }
+  int operator*(const Point& p) const { return x * p.x + y * p.y; }
+  Point operator*(const int n) const { return Point(x * n, y * n, z * n); }
 };
 
 struct ClipArea

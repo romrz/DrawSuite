@@ -31,10 +31,13 @@ int main()
   glMatrixMode(GL_PROJECTION);
   gluOrtho2D(0, WIDTH, 0, HEIGHT);
 
-  clipArea.addPoint(Point(100, 100));
-  clipArea.addPoint(Point(100, 400));
-  clipArea.addPoint(Point(400, 400));
-  clipArea.addPoint(Point(400, 100));
+  clipArea.addPoint(Point(350, 100));
+  clipArea.addPoint(Point(250, 200));
+  clipArea.addPoint(Point(250, 300));
+  clipArea.addPoint(Point(350, 400));
+  clipArea.addPoint(Point(450, 300));
+  clipArea.addPoint(Point(450, 200));
+  clipArea.addPoint(Point(350, 100));
 
   Graphics::getInstance().setClipArea(clipArea);
 
@@ -42,7 +45,7 @@ int main()
 
   clipPolygon = temp;
   clipPolygon.setColor(0, 0, 255);
-  
+
   clipLine.setColor(255, 0, 0);
   line.setColor(0, 255, 0);
   line.clip(false);
@@ -58,8 +61,8 @@ void onDisplay()
 
   clipPolygon.draw();
 
-  clipLine.draw();
   line.draw();
+  clipLine.draw();
 
   glFlush();
 }

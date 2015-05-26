@@ -25,6 +25,7 @@ struct Point
   Point operator-(const Point& p) const { return Point(x - p.x, y - p.y, z - p.z); }
   int operator*(const Point& p) const { return x * p.x + y * p.y; }
   Point operator*(const int n) const { return Point(x * n, y * n, z * n); }
+  Point operator*(const float n) const { return Point((int)((float)x * n), (int)((float)y * n), (int)((float)z * n)); }
 };
 
 struct ClipArea

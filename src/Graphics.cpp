@@ -16,32 +16,29 @@ void Graphics::scale(float sx, float sy)
 
 bool Graphics::clipLine(const Point &p1, const Point &p2) const
 {
-  Point D = p2 - p1, n, w, p, f;
-  float ti = 0.0f, tf = 0.0f, temp;
+  Point D = p2 - p1, n, w, p, f, v;
+  float ti = 0.0f, tf = 1.0f, t;
+  int size = mClipArea.points.size();
 
-  for(int i = 1; i < mClipArea.points.size(); i++) {
-    Point ab = mClipArea.points[i-1] - mClipArea.points[i];
+  for(int i = 0; i < size; i++) {
+    v = mClipArea.points[ (i == 0) ? (size - 1) : (i - 1) ] - mClipArea.points[i];
     
-    n = Point(-ab.y, ab.x);
+    n = Point(-v.y, v.x);
 
-    f = mClipArea.points[i-1];
+    f = mClipArea.points[i];
     w = p1 - f;
 
-    temp = -(float)(n*w)/(float)(n*D);
+    t = -(float)(n * w) / (float)(n * D);
 
-    if(n*D < 0) {
-      tf = temp < tf ? temp : tf;
-    }
-    else if(n*D > 0) {
-      ti = temp > ti ? temp : ti;
-    }
+    if(t >= 0 && t <= 1)
+      if(n * D < 0)
+	tf = t < tf ? t : tf;
+      else if(n * D > 0)
+	ti = t > ti ? t : ti;
   }
 
-  Point np1 = p1 + (p2 - p1) * round(ti);
-  Point np2 = p1 + (p2 - p1) * round(tf);
-
-  std::cout << "p1( " << np1.x << ", " << np1.y  <<  " )" << std::endl;
-  std::cout << "p2( " << np2.x << ", " << np2.y  <<  " )" << std::endl;
+  Point np1 = p1 + (p2 - p1) * ti;
+  Point np2 = p1 + (p2 - p1) * tf;
 
   drawLine(np1, np2);
 }

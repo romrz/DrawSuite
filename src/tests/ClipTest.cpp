@@ -31,14 +31,17 @@ int main()
   glMatrixMode(GL_PROJECTION);
   gluOrtho2D(0, WIDTH, 0, HEIGHT);
 
-  clipArea.addPoint(Point(350, 100));
-  clipArea.addPoint(Point(250, 200));
-  clipArea.addPoint(Point(250, 300));
-  clipArea.addPoint(Point(350, 400));
-  clipArea.addPoint(Point(450, 300));
-  clipArea.addPoint(Point(450, 200));
-  clipArea.addPoint(Point(350, 100));
-
+  // Set ClipArea's points
+  clipArea.addPoint(Point(200, 100));
+  clipArea.addPoint(Point(100, 200));
+  clipArea.addPoint(Point(100, 300));
+  clipArea.addPoint(Point(200, 400));
+  clipArea.addPoint(Point(300, 400));
+  clipArea.addPoint(Point(400, 300));
+  clipArea.addPoint(Point(400, 200));
+  clipArea.addPoint(Point(300, 100));
+  clipArea.addPoint(Point(200, 100));
+  
   Graphics::getInstance().setClipArea(clipArea);
 
   Polygon temp(clipArea.points);

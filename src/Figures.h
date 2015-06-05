@@ -5,20 +5,24 @@
 class Figure
 {
  protected:
+  Matrix mTransform;
   float mR;
   int mTX, mTY;
   float mSX, mSY;
 
   Color mColor;
-
   bool mClip;
+
+  void calculateTransform()
+  {
+  }
   
  public:
   Figure() { mR = mTX = mTY = 0; mSX = mSY = 1.0f; mColor = {0, 0, 0}; mClip = true; }
 
-  virtual void rotate(float angle) { mR = angle; };
-  virtual void translate(int tx, int ty) { mTX = tx; mTY = ty; }
-  virtual void scale(float sx, float sy) { mSX = sx; mSY = sy; }
+  virtual void rotate(float angle) { mR = angle; calculateTransform(); };
+  virtual void translate(int tx, int ty) { mTX = tx; mTY = ty; calculateTransform(); }
+  virtual void scale(float sx, float sy) { mSX = sx; mSY = sy; calculateTransform(); }
 
   virtual void setColor(int r, int g, int b) { mColor = {r, g, b}; }
   
@@ -28,7 +32,6 @@ class Figure
   virtual void draw() const = 0;
   virtual void fill() const = 0;
 };
-
 
 class Line : public Figure
 {

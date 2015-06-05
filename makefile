@@ -3,8 +3,8 @@ CC=g++
 CFLAGS=-std=gnu++0x -c
 LFLAGS=-lGL -lGLU -lglut
 
-SRC_FILES=Graphics Line Rectangle Polygon
-TEST_FILES=PolygonTest ClipTest
+SRC_FILES=Graphics Line Rectangle Polygon Matrix
+TEST_FILES=PolygonTest CyrusBeckClipTest LiangBarskyClipTest
 
 SRC_DIR=src/
 OBJ_DIR=obj/
@@ -29,4 +29,4 @@ create-dir:
 	mkdir -p bin/tests/
 
 clean:
-	rm -r $(OBJ_DIR) $(BIN_DIR)
+	rm -r $(OBJ_DIR) $(BIN_DIR) *~ $(SRC_DIR)*~ $(SRC_DIR)$(TEST_DIR)*~

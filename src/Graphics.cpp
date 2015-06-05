@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include <iostream>
 #include <cmath>
+#include <stdexcept>
 
 void Graphics::rotate(float r)
 {
@@ -14,36 +15,92 @@ void Graphics::scale(float sx, float sy)
 {
 }
 
-bool Graphics::clipLine(const Point &p1, const Point &p2) const
+void Graphics::drawLine(Point p1, Point p2) const
 {
-  Point D = p2 - p1, n, w, p, f, v;
-  float ti = 0.0f, tf = 1.0f, t;
-  int size = mClipArea.points.size();
+  bool clip = true;
+  if(mClipType == CLIP_RECT)
+    clip = clipLineLiangBarsky(p1, p2);
+  else if(mClipType == CLIP_POLY)
+    clip = clipLineCyrusBeck(p1, p2);
 
-  for(int i = 0; i < size; i++) {
-    v = mClipArea.points[ (i == 0) ? (size - 1) : (i - 1) ] - mClipArea.points[i];
-    
-    n = Point(-v.y, v.x);
-
-    f = mClipArea.points[i];
-    w = p1 - f;
-
-    t = -(float)(n * w) / (float)(n * D);
-
-    if(t >= 0 && t <= 1)
-      if(n * D < 0)
-	tf = t < tf ? t : tf;
-      else if(n * D > 0)
-	ti = t > ti ? t : ti;
-  }
-
-  Point np1 = p1 + (p2 - p1) * ti;
-  Point np2 = p1 + (p2 - p1) * tf;
-
-  drawLine(np1, np2);
+  if(clip)
+    DDALine(p1, p2);
 }
 
-void Graphics::drawLine(const Point &p1, const Point &p2) const
+bool Graphics::clipLineCyrusBeck(Point &p1, Point &p2) const
+{
+  Point D = p2 - p1, n, w, p, f, v; // Vectors
+  float ti = 0.0f, tf = 1.0f, t;
+  int size = mClipPoly.points.size();
+  int num, den;
+  
+  for(int i = 0; i < size; i++) {
+    if(i == 0)
+      v = mClipPoly.points[size - 1] - mClipPoly.points[i];
+    else
+      v = mClipPoly.points[i - 1] - mClipPoly.points[i];
+
+    n = Point(-v.y, v.x);
+    f = mClipPoly.points[i];
+    w = p1 - f;
+
+    num = n * w;
+    den = n * D;
+    if(num == 0 && den < 0) return false;
+    
+    t = -(float)num / (float)den;
+    if(t >= 0 && t <= 1)
+      if(den < 0) {
+	if(t < tf) tf = t; }
+      else if(den > 0)
+	if(t > ti) ti = t;
+  }
+  if(ti > tf) return false;
+  
+  Point np1 = p1 + (p2 - p1) * ti;
+  Point np2 = p1 + (p2 - p1) * tf;
+  p1 = np1;
+  p2 = np2;
+}
+
+bool Graphics::clipLineLiangBarsky(Point& p1, Point& p2) const
+{
+  int p[] = {
+    -p2.x + p1.x, // -dx
+    p2.x - p1.x,  // dx
+    -p2.y + p1.y, // -dy
+    p2.y - p1.y   // dy
+  };
+  int q[] = {
+    p1.x - mClipRect.xmin, // xi - xmin
+    mClipRect.xmax - p1.x, // xmax - xi
+    p1.y - mClipRect.ymin, // yi - ymin
+    mClipRect.ymax - p1.y  // ymax - ymin
+  };
+
+  float ui = 0.0f, uf = 1.0f;
+  for(int i = 0; i < 4; i++)
+  {
+    if(p[i] == 0 && q[i] < 0)
+      return false;
+    if(p[i] == 0)
+      continue;
+    
+    float u = (float)q[i] / (float)p[i];
+    if(p[i] < 0) {
+      if(u > ui) ui = u; }
+    else
+      if(u < uf) uf = u;
+  }
+  if(uf < ui) return false;
+  
+  Point np1 = p1 + (p2 - p1) * ui;
+  Point np2 = p1 + (p2 - p1) * uf;
+  p1 = np1;
+  p2 = np2;
+}
+
+void Graphics::DDALine(const Point &p1, const Point &p2) const
 {
   glBegin(GL_POINTS);
   
@@ -64,7 +121,7 @@ void Graphics::drawLine(const Point &p1, const Point &p2) const
     x += xIncrement;
     y += yIncrement;
 
-    glVertex2i(x, y);
+    glVertex2f(x, y);
   }
 
   glEnd();
@@ -80,10 +137,13 @@ void Graphics::fillTriangle(const Point &p1, const Point &p2, const Point &p3) c
   
 void Graphics::drawRectangle(const Point &p1, const Point &p2) const
 {
-  drawLine(p1, Point(p2.x, p1.y));
-  drawLine(Point(p2.x, p1.y), Point(p2.x, p2.y));
-  drawLine(Point(p2.x, p2.y), Point(p1.x, p2.y));
-  drawLine(Point(p1.x, p2.y), p1);
+  Point pt1 = p1;
+  Point pt2 = p2;
+
+  drawLine(pt1, Point(pt2.x, pt1.y));
+  drawLine(Point(pt2.x, pt1.y), Point(pt2.x, pt2.y));
+  drawLine(Point(pt2.x, pt2.y), Point(pt1.x, pt2.y));
+  drawLine(Point(pt1.x, pt2.y), pt1);
 }
 
 void Graphics::fillRectangle(const Point &p1, const Point &p2) const
@@ -100,8 +160,8 @@ void Graphics::drawOval(const Point &point, int rx, int ry) const
   long p = round(ry2 - rx2 * ry + rx2 * 0.25);
   int x0 = point.x, y0 = point.y;
   
-  glVertex2i(x0, y0 + ry);
-  glVertex2i(x0, y0 - ry);
+  glVertex2f(x0, y0 + ry);
+  glVertex2f(x0, y0 - ry);
   
   while(twoRy2 * x < twoRx2 * y) {
     x++;
@@ -111,10 +171,10 @@ void Graphics::drawOval(const Point &point, int rx, int ry) const
     else
       p += twoRy2 * x + ry2 - twoRx2 * (--y);
 
-    glVertex2i(x0 + x, y0 + y);
-    glVertex2i(x0 - x, y0 + y);
-    glVertex2i(x0 + x, y0 - y);
-    glVertex2i(x0 - x, y0 - y);
+    glVertex2f(x0 + x, y0 + y);
+    glVertex2f(x0 - x, y0 + y);
+    glVertex2f(x0 + x, y0 - y);
+    glVertex2f(x0 - x, y0 - y);
   }
   
   p = round(ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2);
@@ -127,10 +187,10 @@ void Graphics::drawOval(const Point &point, int rx, int ry) const
     else
       p += twoRy2 * (++x) - twoRx2 * y + rx2;
 
-    glVertex2i(x0 + x, y0 + y);
-    glVertex2i(x0 - x, y0 + y);
-    glVertex2i(x0 + x, y0 - y);
-    glVertex2i(x0 - x, y0 - y);
+    glVertex2f(x0 + x, y0 + y);
+    glVertex2f(x0 - x, y0 + y);
+    glVertex2f(x0 + x, y0 - y);
+    glVertex2f(x0 - x, y0 - y);
   }
 
   glEnd();

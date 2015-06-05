@@ -31,7 +31,6 @@ int main()
   gluOrtho2D(0, WIDTH, 0, HEIGHT);
 
   glutMainLoop();
-    
   return 0;
 }
 

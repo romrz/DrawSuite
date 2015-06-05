@@ -8,8 +8,8 @@ void onMove(int x, int y);
 const int WIDTH = 500;
 const int HEIGHT = 500;
 
-ClipArea clipArea;
-Polygon clipPolygon;
+ClipPolygon clipArea;
+Polygon polygon;
 
 Line clipLine(Point(0, 0), Point(0,0));
 Line line(Point(0, 0), Point(0,0));
@@ -20,7 +20,7 @@ int main()
   glutInit(&a, NULL);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
   glutInitWindowSize(WIDTH, HEIGHT);
-  glutCreateWindow("Polygon");
+  glutCreateWindow("Cyrus-Beck Algorithm");
 
   glutDisplayFunc(onDisplay);
   glutMouseFunc(onClick);
@@ -45,16 +45,14 @@ int main()
   Graphics::getInstance().setClipArea(clipArea);
 
   Polygon temp(clipArea.points);
-
-  clipPolygon = temp;
-  clipPolygon.setColor(0, 0, 255);
+  polygon = temp;
+  polygon.setColor(0, 0, 255);
 
   clipLine.setColor(255, 0, 0);
   line.setColor(0, 255, 0);
   line.clip(false);
 
   glutMainLoop();
-    
   return 0;
 }
 
@@ -62,8 +60,7 @@ void onDisplay()
 {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  clipPolygon.draw();
-
+  polygon.draw();
   line.draw();
   clipLine.draw();
 
@@ -83,7 +80,6 @@ void onClick(int button, int state, int x, int y)
 
     line.p1 = p;
     line.p2 = p;
-
   }
   
   glutPostRedisplay();
